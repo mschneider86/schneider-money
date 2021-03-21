@@ -1,11 +1,24 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { api } from '../../services/api';
 import { Container } from './styles';
 
+interface Transaction {
+  id: number;
+  title: string;
+  amount: string;
+  type: string;
+  category: string;
+  createdAt: string;
+}
+
 export function TransactionsTable() {
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+
   useEffect(() => {
-    api.get('transactions').then((response) => console.log(response.data));
-  });
+    api
+      .get('transactions')
+      .then((response) => setTransactions(response.data.transactions));
+  }, []);
 
   return (
     <Container>
@@ -20,42 +33,16 @@ export function TransactionsTable() {
         </thead>
 
         <tbody>
-          <tr>
-            <td>Desenvolvimento de aplicativo</td>
-            <td className='deposit'>$18.000</td>
-            <td>Desenvolvimento</td>
-            <td>01/02/2021</td>
-          </tr>
-          <tr>
-            <td>Desenvolvimento de sistema web</td>
-            <td className='deposit'>$12.000</td>
-            <td>Desenvolvimento</td>
-            <td>11/03/2021</td>
-          </tr>
-          <tr>
-            <td>Desenvolvimento de aplicativo</td>
-            <td className='deposit'>$18.000</td>
-            <td>Desenvolvimento</td>
-            <td>01/02/2021</td>
-          </tr>
-          <tr>
-            <td>Aluguel</td>
-            <td className='withdraw'>- $1.500</td>
-            <td>Casa</td>
-            <td>05/03/2021</td>
-          </tr>
-          <tr>
-            <td>Condomínio</td>
-            <td className='deposit'>- $500</td>
-            <td>Casa</td>
-            <td>05/03/2021</td>
-          </tr>
-          <tr>
-            <td>Desenvolvimento de sistema web</td>
-            <td className='deposit'>$12.000</td>
-            <td>Desenvolvimento</td>
-            <td>11/03/2021</td>
-          </tr>
+          {transactions.map((transaction) => {
+            return (
+              <tr key={transaction.id}>
+                <td>{transaction.title}</td>
+                <td className={transaction.type}>{transaction.amount}</td>
+                <td>{transaction.category}</td>
+                <td>{transaction.createdAt}</td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </Container>
