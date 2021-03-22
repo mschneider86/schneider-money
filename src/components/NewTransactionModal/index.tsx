@@ -6,6 +6,7 @@ import Modal from 'react-modal';
 import { Container, TransactionTypeContainer, RadioBox } from './styles';
 import { api } from '../../services/api';
 import { TransactionsContext } from '../../TransactionsContext';
+import { setUncaughtExceptionCaptureCallback } from 'node:process';
 
 interface NewTransactionModalProps {
   isOpen: boolean;
@@ -18,21 +19,28 @@ export function NewTransactionModal({
 }: NewTransactionModalProps) {
   const { createTransaction } = useContext(TransactionsContext);
 
-  const [title, setTile] = useState('');
+  const [title, setTitle] = useState('');
   const [amount, setAmount] = useState(0);
   const [category, setCategory] = useState('');
 
   const [type, setType] = useState('deposit');
 
-  function handleCreateNewTransaction(event: FormEvent) {
+  async function handleCreateNewTransaction(event: FormEvent) {
     event.preventDefault();
 
-    createTransaction({
+    await createTransaction({
       title,
       amount,
       category,
       type,
     });
+
+    setTitle('');
+    setAmount(0);
+    setCategory('');
+    setType('deposit');
+
+    onRequestClose();
   }
 
   return (
@@ -55,7 +63,7 @@ export function NewTransactionModal({
         <input
           placeholder='Título'
           value={title}
-          onChange={(event) => setTile(event.target.value)}
+          onChange={(event) => setTitle(event.target.value)}
         />
 
         <input
